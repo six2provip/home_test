@@ -1,0 +1,61 @@
+name: Sync OptiSigns → OpenAI
+
+on:
+  schedule:
+    # Every 10 minutes — for testing. Adjust to every hour later if desired.
+    - cron: '*/10 * * * *'
+  workflow_dispatch:   # Allows you to trigger manually from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'          # Caches pip dependencies automatically
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ── State persistence ─────────────────────────────────────────────
+      # state.json tracks which articles are already uploaded + their hashes.
+      # Without it, every run would re-upload ALL articles.
+      - name: Restore cached state
+        uses: actions/cache@v4
+        id: cache-state
+        with:
+          path: data/state
+          key: optibot-state-${{ github.run_id }}
+          restore-keys: |
+            optibot-state-
+
+      - name: Create data directories
+        run: mkdir -p data/markdown data/state data/logs
+
+      # ── Run the sync ──────────────────────────────────────────────────
+      - name: Run OptiBot sync
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_VECTOR_STORE_ID: ${{ secrets.OPENAI_VECTOR_STORE_ID }}
+          OPENAI_ASSISTANT_ID: ${{ secrets.OPENAI_ASSISTANT_ID }}
+          OPTISIGNS_BASE_URL: https://support.optisigns.com
+          MARKDOWN_DIR: data/markdown
+          STATE_FILE: data/state/state.json
+          LOG_FILE: data/logs/sync.log
+        run: python -m app.main
+
+      # ── Upload logs as artifacts ──────────────────────────────────────
+      # These are downloadable from the GitHub Actions run page.
+      - name: Upload sync logs
+        uses: actions/upload-artifact@v4
+        if: always()    # Upload even if the sync failed — useful for debugging
+        with:
+          name: sync-logs-${{ github.run_id }}
+          path: data/logs/
+          retention-days: 7
