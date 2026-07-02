@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Runtime data (mounted at runtime via volume)
+data/
+
+# Environment (mounted at runtime via env_file)
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Project docs & scripts (not needed in image)
+README.md
+prompt.md
+run.sh

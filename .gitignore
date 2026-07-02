@@ -1,0 +1,16 @@
+// gitignore
+# Sensitive credentials
+.env
+ 
+# Runtime data (markdown files contain OptiSigns URLs + article content)
+data/
+ 
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+ 
+# OS files
+.DS_Store
+Thumbs.db

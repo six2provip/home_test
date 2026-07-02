@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  optibot:
+    build: .
+    container_name: optibot
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    # The container runs once (fetch, convert, sync, upload) and exits.
+    # To run periodically (e.g. every hour), uncomment the next lines:
+    # restart: unless-stopped
+    # command: >
+    #   sh -c "while true; do python -m app.main; sleep 3600; done"
