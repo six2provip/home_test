@@ -2,8 +2,8 @@ name: Sync OptiSigns → OpenAI
 
 on:
   schedule:
-    # Every 10 minutes — for testing. Adjust to every hour later if desired.
-    - cron: '*/10 * * * *'
+    # Every 7 minutes — for testing. Adjust to every hour later if desired.
+    - cron: '*/7 * * * *'
   workflow_dispatch:   # Allows you to trigger manually from GitHub UI
 
 jobs:
